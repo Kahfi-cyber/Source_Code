@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LushTerra - Digital Exhibition Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: white;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00c4ff;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.5; }
+        }
+
+        /* Desktop Navbar */
+        .desktop-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: rgba(17, 17, 17, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #333;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 3rem;
+            transition: all 0.3s ease;
+        }
+
+        .desktop-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00c4ff, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .desktop-nav {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .desktop-nav-link {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .desktop-nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 196, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .desktop-nav-link:hover::before {
+            left: 100%;
+        }
+
+        .desktop-nav-link:hover,
+        .desktop-nav-link.active {
+            color: #00c4ff;
+            background: rgba(0, 196, 255, 0.1);
+        }
+
+        /* Mobile Hamburger */
+        .mobile-hamburger {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 196, 255, 0.1);
+            border: 2px solid #00c4ff;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1002;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-hamburger:hover {
+            background: rgba(0, 196, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .hamburger-line {
+            width: 20px;
+            height: 2px;
+            background: #00c4ff;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+
+        .mobile-hamburger.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-hamburger.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-hamburger.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Mobile Sidebar */
+        .mobile-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: linear-gradient(180deg, #111 0%, #222 100%);
+            border-right: 1px solid #333;
+            z-index: 1000;
+            padding: 4rem 0 2rem;
+            transform: translateX(-100%);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .mobile-sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-logo {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 0 2rem;
+        }
+
+        .mobile-logo h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00c4ff, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mobile-nav-menu {
+            list-style: none;
+        }
+
+        .mobile-nav-item {
+            margin: 0.5rem 0;
+        }
+
+        .mobile-nav-link {
+            display: block;
+            padding: 1.2rem 2rem;
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-weight: 500;
+        }
+
+        .mobile-nav-link::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 196, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .mobile-nav-link:hover::before {
+            left: 100%;
+        }
+
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            color: #00c4ff;
+            background: rgba(0, 196, 255, 0.1);
+            transform: translateX(10px);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 80px;
+        }
+
+        .section {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .section-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .section-content.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered animation for child elements */
+        .section-content > * {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .section-content.animate > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-content.animate > *:nth-child(1) { transition-delay: 0.1s; }
+        .section-content.animate > *:nth-child(2) { transition-delay: 0.2s; }
+        .section-content.animate > *:nth-child(3) { transition-delay: 0.3s; }
+        .section-content.animate > *:nth-child(4) { transition-delay: 0.4s; }
+        .section-content.animate > *:nth-child(5) { transition-delay: 0.5s; }
+
+        /* Home Page */
+        .hero {
+            text-align: center;
+            padding: 8rem 0;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #00c4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: #ccc;
+            margin-bottom: 3rem;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #00c4ff, #0099cc);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 196, 255, 0.3);
+        }
+
+        /* Exhibition Page */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .artwork-card {
+            background: #222;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .artwork-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 196, 255, 0.2);
+        }
+
+        .artwork-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .artwork-info {
+            padding: 1.5rem;
+        }
+
+        .artwork-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .artwork-description {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #222;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #ccc;
+        }
+
+        .close-modal:hover {
+            color: #00c4ff;
+        }
+
+        /* Auction Page */
+        .auction-item {
+            background: #222;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .auction-info h3 {
+            color: #00c4ff;
+            margin-bottom: 0.5rem;
+        }
+
+        .current-bid {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #4ade80;
+        }
+
+        .countdown {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: #ff6b6b;
+        }
+
+        .bid-button {
+            background: linear-gradient(45deg, #4ade80, #22c55e);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .bid-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 222, 128, 0.3);
+        }
+
+        /* Forum Page */
+        .forum-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .forum-thread {
+            background: #222;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #00c4ff;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .forum-thread:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 196, 255, 0.1);
+        }
+
+        .forum-thread.new-message {
+            animation: newMessageGlow 0.8s ease-out;
+        }
+
+        @keyframes newMessageGlow {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+                box-shadow: 0 0 0 rgba(0, 196, 255, 0);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(0, 196, 255, 0.4);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+                box-shadow: 0 10px 30px rgba(0, 196, 255, 0.1);
+            }
+        }
+
+        .thread-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: #fff;
+        }
+
+        .thread-meta {
+            color: #888;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .thread-stats {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-item {
+            background: #333;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #00c4ff;
+        }
+
+        .new-topic-btn {
+            background: linear-gradient(135deg, #00c4ff, #0099cc);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .new-topic-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .new-topic-btn:hover::before {
+            left: 100%;
+        }
+
+        .new-topic-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 196, 255, 0.3);
+        }
+
+        .forum-input-container {
+            background: #222;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #333;
+        }
+
+        .forum-input {
+            width: 100%;
+            background: #333;
+            border: none;
+            padding: 1rem;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 100px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .forum-input:focus {
+            border: 2px solid #00c4ff;
+            box-shadow: 0 0 20px rgba(0, 196, 255, 0.2);
+        }
+
+        .forum-input::placeholder {
+            color: #888;
+        }
+
+        .forum-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .post-btn {
+            background: linear-gradient(135deg, #00c4ff, #0099cc);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .post-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 196, 255, 0.3);
+        }
+
+        /* Chat Page */
+        .chat-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 2rem;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            background: #1a1a1a;
+            border-radius: 20px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #333;
+            background: #222;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .chat-header h3 {
+            color: #00c4ff;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            scroll-behavior: smooth;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #00c4ff;
+            border-radius: 3px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 0.5rem;
+            animation: messageSlideIn 0.4s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.received {
+            justify-content: flex-start;
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 0.8rem 1.2rem;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.received .message-bubble {
+            background: #333;
+            color: white;
+            border-bottom-left-radius: 6px;
+        }
+
+        .message.sent .message-bubble {
+            background: linear-gradient(135deg, #00c4ff, #0099cc);
+            color: #000;
+            border-bottom-right-radius: 6px;
+        }
+
+        .message-author {
+            font-size: 0.75rem;
+            margin-bottom: 0.3rem;
+            opacity: 0.8;
+        }
+
+        .message.received .message-author {
+            color: #00c4ff;
+        }
+
+        .message.sent .message-author {
+            color: #000;
+            text-align: right;
+        }
+
+        .message-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .chat-input-container {
+            padding: 1.5rem;
+            border-top: 1px solid #333;
+            background: #222;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .chat-input {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #333;
+            border-radius: 25px;
+            padding: 0.5rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.8rem 1rem;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .chat-input input::placeholder {
+            color: #888;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #00c4ff, #0099cc);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 196, 255, 0.3);
+        }
+
+        .send-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .desktop-navbar {
+                display: none;
+            }
+            
+            .mobile-hamburger {
+                display: flex;
+            }
+            
+            .main-content {
+                padding-top: 0;
+            }
+            
+            .section {
+                padding: 2rem 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .auction-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .chat-wrapper {
+                padding: 1rem;
+                min-height: 70vh;
+            }
+            
+            .chat-container {
+                max-width: 100%;
+                height: 500px;
+                border-radius: 15px;
+            }
+            
+            .chat-header {
+                padding: 1rem;
+            }
+            
+            .chat-messages {
+                padding: 1rem;
+            }
+            
+            .chat-input-container {
+                padding: 1rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-hamburger {
+                display: none;
+            }
+            
+            .mobile-sidebar {
+                display: none;
+            }
+            
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation" id="bgAnimation"></div>
+
+    <!-- Desktop Navbar -->
+    <nav class="desktop-navbar">
+        <div class="desktop-logo">LushTerra</div>
+        <ul class="desktop-nav">
+            <li><a href="#home" class="desktop-nav-link active">Home</a></li>
+            <li><a href="#exhibition" class="desktop-nav-link">Exhibition</a></li>
+            <li><a href="#auction" class="desktop-nav-link">Auction</a></li>
+            <li><a href="#forum" class="desktop-nav-link">Forum</a></li>
+            <li><a href="#chat" class="desktop-nav-link">Chat</a></li>
+            <li><a href="#profile" class="desktop-nav-link">Profile</a></li>
+        </ul>
+    </nav>
+
+    <!-- Mobile Hamburger -->
+    <div class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileMenu()">
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileMenu()"></div>
+
+    <!-- Mobile Sidebar -->
+    <nav class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-logo">
+            <h2>LushTerra</h2>
+        </div>
+        <ul class="mobile-nav-menu">
+            <li class="mobile-nav-item">
+                <a href="#home" class="mobile-nav-link active">Home</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="#exhibition" class="mobile-nav-link">Exhibition</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="#auction" class="mobile-nav-link">Auction</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="#forum" class="mobile-nav-link">Forum</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="#chat" class="mobile-nav-link">Chat</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="#profile" class="mobile-nav-link">Profile</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Section -->
+        <section class="section" id="home">
+            <div class="section-content">
+                <div class="hero">
+                    <h1>Welcome to LushTerra</h1>
+                    <p>Platform dimana kalian bisa melihat / menuangkan kreasi kalian</p>
+                    <a href="#exhibition" class="cta-button">Explore Now</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exhibition Section -->
+        <section class="section" id="exhibition">
+            <div class="section-content">
+                <h2>Art Exhibition</h2>
+                <div class="gallery-grid">
+                    <div class="artwork-card" onclick="openModal('Ilustrasi', 'Dimana, makna yang menghargai sebuah design', '$2,500')">
+                        <div class="artwork-image">🎨</div>
+                        <div class="artwork-info">
+                            <h3 class="artwork-title">Ilustrasi</h3>
+                            <p class="artwork-description">Apa saja tentang ilustrasi</p>
+                        </div>
+                    </div>
+                    <div class="artwork-card" onclick="openModal('Neon Nights', 'Vibrant neon colors dance across the canvas in this electrifying piece.', '$3,200')">
+                        <div class="artwork-image">🌃</div>
+                        <div class="artwork-info">
+                            <h3 class="artwork-title">Neon Nights</h3>
+                            <p class="artwork-description">Fotografi malam citiy light</p>
+                        </div>
+                    </div>
+                    <div class="artwork-card" onclick="openModal('Abstract Flow', 'Flowing forms and organic shapes create a sense of movement and energy.', '$1,800')">
+                        <div class="artwork-image">🌊</div>
+                        <div class="artwork-info">
+                            <h3 class="artwork-title">Abstract Flow</h3>
+                            <p class="artwork-description">Foto tentang laut</p>
+                        </div>
+                    </div>
+                    <div class="artwork-card" onclick="openModal('Cosmic Vision', 'A journey through space and time captured in stunning visual detail.', '$4,100')">
+                        <div class="artwork-image">🌌</div>
+                        <div class="artwork-info">
+                            <h3 class="artwork-title">Cosmic Vision</h3>
+                            <p class="artwork-description">Kedalaman laut</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Auction Section -->
+        <section class="section" id="auction">
+            <div class="section-content">
+                <h2>Live Auctions</h2>
+                <div class="auction-item">
+                    <div class="auction-info">
+                        <h3>Pemandangan Gunung 16K</h3>
+                        <div class="current-bid">Current Bid: $5,200</div>
+                        <div class="countdown" id="timer1">02:15:30</div>
+                    </div>
+                    <button class="bid-button" onclick="placeBid(this, 5200)">Place Bid</button>
+                </div>
+                <div class="auction-item">
+                    <div class="auction-info">
+                        <h3>Monalisa</h3>
+                        <div class="current-bid">Current Bid: $3,800</div>
+                        <div class="countdown" id="timer2">01:45:12</div>
+                    </div>
+                    <button class="bid-button" onclick="placeBid(this, 3800)">Place Bid</button>
+                </div>
+                <div class="auction-item">
+                    <div class="auction-info">
+                        <h3>Quantum Reflections</h3>
+                        <div class="current-bid">Current Bid: $7,500</div>
+                        <div class="countdown" id="timer3">03:22:45</div>
+                    </div>
+                    <button class="bid-button" onclick="placeBid(this, 7500)">Place Bid</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Forum Section -->
+        <section class="section" id="forum">
+            <div class="section-content">
+                <div class="forum-container">
+                    <h2>Community Forum</h2>
+                    
+                    <div class="forum-input-container">
+                        <textarea class="forum-input" id="forumInput" placeholder="Start a new discussion or ask a question..."></textarea>
+                        <div class="forum-actions">
+                            <div style="color: #888; font-size: 0.9rem;">Share your thoughts with the community</div>
+                            <button class="post-btn" onclick="addNewForumPost()">Post Message</button>
+                        </div>
+                    </div>
+                    
+                    <div id="forumThreads">
+                        <div class="forum-thread">
+                            <div class="thread-title">Best practices for digital art preservation</div>
+                            <div class="thread-meta">
+                                <span>Started by ArtLover42 • 2 hours ago</span>
+                            </div>
+                            <div class="thread-stats">
+                                <span class="stat-item">12 replies</span>
+                                <span class="stat-item">45 views</span>
+                            </div>
+                        </div>
+                        <div class="forum-thread">
+                            <div class="thread-title">Upcoming exhibition: "Future Visions"</div>
+                            <div class="thread-meta">
+                                <span>Started by CuratorSarah • 5 hours ago</span>
+                            </div>
+                            <div class="thread-stats">
+                                <span class="stat-item">8 replies</span>
+                                <span class="stat-item">32 views</span>
+                            </div>
+                        </div>
+                        <div class="forum-thread">
+                            <div class="thread-title">Tips for new collectors</div>
+                            <div class="thread-meta">
+                                <span>Started by CollectorPro • 1 day ago</span>
+                            </div>
+                            <div class="thread-stats">
+                                <span class="stat-item">15 replies</span>
+                                <span class="stat-item">89 views</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Section -->
+        <section class="section" id="chat">
+            <div class="section-content">
+                <div class="chat-wrapper">
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <h3>LushTerra AI Assistant</h3>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message received">
+                                <div class="message-bubble">
+                                    <div class="message-author">LushTerra AI</div>
+                                    <div class="message-text">Welcome to LushTerra! I'm your AI assistant. I can help you explore our exhibitions, learn about auctions, or answer any questions you have. Try saying "hello" to get started! 🎨</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <div class="chat-input">
+                                <input type="text" id="messageInput" placeholder="Type your message..." onkeypress="handleChatEnter(event)">
+                                <button class="send-btn" onclick="sendMessage()">Send ➤</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section class="section" id="profile">
+            <div class="section-content">
+                <h2>User Profile</h2>
+                <div style="background: #222; padding: 2rem; border-radius: 15px; max-width: 600px;">
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <div style="width: 100px; height: 100px; background: linear-gradient(45deg, #00c4ff, #0099cc); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem;">👤</div>
+                        <h3>Art Enthusiast</h3>
+                        <p style="color: #ccc;">Member since 2024</p>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: #333; border-radius: 10px;">
+                            <div style="font-size: 1.5rem; font-weight: 600; color: #00c4ff;">12</div>
+                            <div style="color: #ccc;">Artworks Owned</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #333; border-radius: 10px;">
+                            <div style="font-size: 1.5rem; font-weight: 600; color: #4ade80;">8</div>
+                            <div style="color: #ccc;">Auctions Won</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal" id="artworkModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle"></h3>
+            <p id="modalDescription" style="margin: 1rem 0; color: #ccc;"></p>
+            <div id="modalPrice" style="font-size: 1.2rem; font-weight: 600; color: #4ade80;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Create animated background particles
+        function createParticles() {
+            const container = document.getElementById('bgAnimation');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Mobile menu functions
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const hamburger = document.getElementById('mobileHamburger');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.toggle('active');
+            hamburger.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            // Prevent body scroll when menu is open
+            if (sidebar.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const hamburger = document.getElementById('mobileHamburger');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.remove('active');
+            hamburger.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Animation observer for fade-up effects that replay on each view
+        function initScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.3,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const sectionContent = entry.target.querySelector('.section-content');
+                    if (sectionContent) {
+                        if (entry.isIntersecting) {
+                            // Reset animation by removing class first
+                            sectionContent.classList.remove('animate');
+                            // Force reflow to ensure the class removal takes effect
+                            void sectionContent.offsetWidth;
+                            // Add animation class to trigger the animation
+                            setTimeout(() => {
+                                sectionContent.classList.add('animate');
+                            }, 50);
+                        } else {
+                            // Remove animation class when section leaves viewport
+                            sectionContent.classList.remove('animate');
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all sections
+            document.querySelectorAll('.section').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Check if first section is already in view on page load
+            setTimeout(() => {
+                const firstSection = document.querySelector('.section');
+                if (firstSection) {
+                    const rect = firstSection.getBoundingClientRect();
+                    if (rect.top < window.innerHeight * 0.7 && rect.bottom > 0) {
+                        const sectionContent = firstSection.querySelector('.section-content');
+                        if (sectionContent) {
+                            sectionContent.classList.add('animate');
+                        }
+                    }
+                }
+            }, 100);
+        }
+
+        // Navigation active state update
+        function updateActiveNav() {
+            const sections = document.querySelectorAll('.section');
+            const desktopLinks = document.querySelectorAll('.desktop-nav-link');
+            const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            desktopLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+
+            mobileLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Modal functions
+        function openModal(title, description, price) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalDescription').textContent = description;
+            document.getElementById('modalPrice').textContent = price;
+            document.getElementById('artworkModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('artworkModal').classList.remove('active');
+        }
+
+        // Auction functions
+        function placeBid(button, currentBid) {
+            const newBid = currentBid + 100;
+            const bidElement = button.parentElement.querySelector('.current-bid');
+            bidElement.textContent = `Current Bid: $${newBid.toLocaleString()}`;
+            button.onclick = () => placeBid(button, newBid);
+            
+            // Show success message
+            const originalText = button.textContent;
+            button.textContent = 'Bid Placed!';
+            button.style.background = '#4ade80';
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.background = 'linear-gradient(45deg, #4ade80, #22c55e)';
+            }, 2000);
+        }
+
+        // Forum functions
+        function addNewForumPost() {
+            const input = document.getElementById('forumInput');
+            const message = input.value.trim();
+            if (message) {
+                const threadsContainer = document.getElementById('forumThreads');
+                const newThread = document.createElement('div');
+                newThread.className = 'forum-thread new-message';
+                newThread.innerHTML = `
+                    <div class="thread-title">${message}</div>
+                    <div class="thread-meta">
+                        <span>Started by You • Just now</span>
+                    </div>
+                    <div class="thread-stats">
+                        <span class="stat-item">0 replies</span>
+                        <span class="stat-item">1 view</span>
+                    </div>
+                `;
+                threadsContainer.insertBefore(newThread, threadsContainer.firstChild);
+                input.value = '';
+                
+                // Remove animation class after animation completes
+                setTimeout(() => {
+                    newThread.classList.remove('new-message');
+                }, 800);
+            }
+        }
+
+        // Chat functions with AI responses
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (message) {
+                const messagesContainer = document.getElementById('chatMessages');
+                
+                // Add user message
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message sent';
+                messageElement.innerHTML = `
+                    <div class="message-bubble">
+                        <div class="message-author">You</div>
+                        <div class="message-text">${message}</div>
+                    </div>
+                `;
+                messagesContainer.appendChild(messageElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                input.value = '';
+                
+                // Generate AI response after 1 second
+                setTimeout(() => {
+                    const aiResponse = generateAIResponse(message);
+                    const responseElement = document.createElement('div');
+                    responseElement.className = 'message received';
+                    responseElement.innerHTML = `
+                        <div class="message-bubble">
+                            <div class="message-author">LushTerra AI</div>
+                            <div class="message-text">${aiResponse}</div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(responseElement);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 1000);
+            }
+        }
+
+        // AI response generator with rule-based logic
+        function generateAIResponse(userMessage) {
+            const message = userMessage.toLowerCase().trim();
+            
+            // Greeting responses
+            if (message.includes('hello') || message.includes('hi') || message === 'hey') {
+                return "Hello! How are you today? I'm here to help you explore LushTerra's amazing art collection.";
+            }
+            
+            // Goodbye responses
+            if (message.includes('bye') || message.includes('goodbye') || message.includes('see you')) {
+                return "Goodbye! Thanks for visiting LushTerra. See you later! 👋";
+            }
+            
+            // Art-related responses
+            if (message.includes('art') || message.includes('artwork') || message.includes('painting')) {
+                return "Art is fascinating! Have you checked out our current exhibition? We have some incredible digital pieces on display.";
+            }
+            
+            // Auction-related responses
+            if (message.includes('auction') || message.includes('bid') || message.includes('buy')) {
+                return "Our live auctions are exciting! You can place bids on amazing artworks. Check out the current auctions - some great pieces are available!";
+            }
+            
+            // Help responses
+            if (message.includes('help') || message.includes('how') || message.includes('what')) {
+                return "I'm here to help! You can explore our exhibitions, participate in auctions, or chat with other art enthusiasts. What interests you most?";
+            }
+            
+            // Price/cost responses
+            if (message.includes('price') || message.includes('cost') || message.includes('expensive')) {
+                return "Our artworks range from affordable pieces to premium collections. Each piece in our exhibition shows its current value or auction status.";
+            }
+            
+            // Thank you responses
+            if (message.includes('thank') || message.includes('thanks')) {
+                return "You're very welcome! I'm glad I could help. Feel free to ask me anything about LushTerra! 😊";
+            }
+            
+            // Default responses for other messages
+            const defaultResponses = [
+                "That's interesting! Tell me more about what you're thinking.",
+                "I hear you. What aspect of LushTerra interests you most?",
+                "Hmm, that's a great point. Have you explored our different sections yet?",
+                "I'd love to hear more about that. Are you interested in any particular type of art?",
+                "That sounds intriguing! Feel free to share more thoughts with me.",
+                "Interesting perspective! What brings you to LushTerra today?"
+            ];
+            
+            return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+        }
+
+        function handleChatEnter(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Countdown timers
+        function updateCountdowns() {
+            const timers = ['timer1', 'timer2', 'timer3'];
+            timers.forEach((timerId, index) => {
+                const timer = document.getElementById(timerId);
+                if (timer) {
+                    const currentTime = timer.textContent.split(':');
+                    let hours = parseInt(currentTime[0]);
+                    let minutes = parseInt(currentTime[1]);
+                    let seconds = parseInt(currentTime[2]);
+                    
+                    seconds--;
+                    if (seconds < 0) {
+                        seconds = 59;
+                        minutes--;
+                        if (minutes < 0) {
+                            minutes = 59;
+                            hours--;
+                            if (hours < 0) {
+                                hours = 0;
+                                minutes = 0;
+                                seconds = 0;
+                            }
+                        }
+                    }
+                    
+                    timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            });
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // Initialize scroll animations
+            initScrollAnimations();
+            
+            // Navigation event listeners for mobile links
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    closeMobileMenu();
+                });
+            });
+            
+            // Scroll event for active navigation
+            window.addEventListener('scroll', updateActiveNav);
+            
+            // Start countdown timers
+            setInterval(updateCountdowns, 1000);
+            
+            // Close modal when clicking outside
+            document.getElementById('artworkModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeMobileMenu();
+                }
+            });
+            
+            // Handle escape key to close mobile menu
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeMobileMenu();
+                }
+            });
+            
+            // Initial active nav update
+            updateActiveNav();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9700125240ba6cf7',t:'MTc1NTMzODI4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
